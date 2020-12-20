@@ -14,8 +14,9 @@ from azureml.data.dataset_factory import TabularDatasetFactory
 # Data is located at:
 # "https://automlsamplenotebookdata.blob.core.windows.net/automl-sample-notebook-data/bankmarketing_train.csv"
 
-ds = ### YOUR CODE HERE ###
-
+ds = Dataset.Tabular.from_delimited_files(path=datastore_path)
+print(ds.to_pandas_dataframe())
+    
 x, y = clean_data(ds)
 
 # TODO: Split data into train and test sets.
