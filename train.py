@@ -9,22 +9,22 @@ from sklearn.preprocessing import OneHotEncoder
 import pandas as pd
 from azureml.core.run import Run
 from azureml.data.dataset_factory import TabularDatasetFactory
+#from azureml.core import Workspace, Dataset
+#import joblib
+#from sklearn.linear_model import Ridge
+
+from azureml.core import Model
+from azureml.core.resource_configuration import ResourceConfiguration
 
 # TODO: Create TabularDataset using TabularDatasetFactory
 # Data is located at:
 # "https://automlsamplenotebookdata.blob.core.windows.net/automl-sample-notebook-data/bankmarketing_train.csv"
 
-vURLFile="https://automlsamplenotebookdata.blob.core.windows.net/automl-sample-notebook-data/bankmarketing_train.csv"
-ds = TabularDatasetFactory.from_delimited_files(path=vURLFile)
-pddf = ds.to_pandas_dataframe()
-    
-x, y = clean_data(ds)
+data_url_path = "https://automlsamplenotebookdata.blob.core.windows.net/automl-sample-notebook-data/bankmarketing_train.csv"
+ds = TabularDatasetFactory.from_delimited_files(path=data_url_path)
+#df = ds.to_pandas_dataframe()
 
-# TODO: Split data into train and test sets.
-
-### YOUR CODE HERE ###a
-
-run = Run.get_context()
+# ds = ### YOUR CODE HERE ###
 
 def clean_data(data):
     # Dict for cleaning data
@@ -52,6 +52,15 @@ def clean_data(data):
 
     y_df = x_df.pop("y").apply(lambda s: 1 if s == "yes" else 0)
     
+    return x_df, y_df
+ 
+x, y = clean_data(ds)
+
+# TODO: Split data into train and test sets.
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20, random_state=50)
+    
+run = Run.get_context()
+
 
 def main():
     # Add arguments to script
@@ -69,6 +78,21 @@ def main():
 
     accuracy = model.score(x_test, y_test)
     run.log("Accuracy", np.float(accuracy))
+
+    os.makedirs('./outputs', exist_ok=True)  
+     
+    model_file_name = 'dpbanktrain.pkl'
+    # save model in the outputs folder so it automatically get uploaded
+    with open(model_file_name, "wb") as file:
+        joblib.dump(value=model, filename=os.path.join('./outputs/',
+                                                        model_file_name))
+                                                     
+    # joblib.dump(model, 'model.joblib')
+    # model1 = run.register_model(model_name='sklearn1', 
+    #                       model_path='/model.joblib',
+    #                       model_framework=Model.Framework.SCIKITLEARN,
+    #                       model_framework_version='0.19.1',
+    #                       resource_configuration=ResourceConfiguration(cpu=1, memory_in_gb=0.5))
 
 if __name__ == '__main__':
     main()
