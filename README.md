@@ -19,10 +19,10 @@ In contrast, for the AutoML model with ID AutoML_ee4a685e-34f2-4031-a4f9-fe96ff3
 
 ![Pipeline diagram](/Images/Pipeline.jfif)
 
-Pipeline architecture:
-		Dataset - Created the dataset using TabularDatasetFactory. Split data into train and test (0.2) sets.
-		Train data - Created the training script to train the marketing data dataset using Scikit-learn Logistic regression algorithm.
-		HyperDrive - Used HyperDrive with specified parameter sampler and policy for early stopping to find the optimal hyperparameter for logistic regression model. This will give us trained	model with optimize hyperparameter.
+Pipeline architecture:<br/>
+		Dataset - Created the dataset using TabularDatasetFactory. Split data into train and test (0.2) sets.<br/>
+		Train data - Created the training script to train the marketing data dataset using Scikit-learn Logistic regression algorithm.<br/>
+		HyperDrive - Used HyperDrive with specified parameter sampler and policy for early stopping to find the optimal hyperparameter for logistic regression model. 					This will give us trained model with optimize hyperparameter.<br/>
 	
 
 **What are the benefits of the parameter sampler you chose?**
