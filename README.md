@@ -17,7 +17,7 @@ In contrast, for the AutoML model with ID AutoML_ee4a685e-34f2-4031-a4f9-fe96ff3
 ## Scikit-learn Pipeline
 **Explain the pipeline architecture, including data, hyperparameter tuning, and classification algorithm.**
 
-Images/Pipeline.JPG
+Images/Pipeline.jfif
 
 Pipeline architecture:
 		Dataset - Created the dataset using TabularDatasetFactory. Split data into train and test (0.2) sets.
