@@ -27,14 +27,9 @@ Pipeline architecture:<br/>
 
 **What are the benefits of the parameter sampler you chose?**
 
-I chose Random Paramer Sampler:
+I chose Random Paramer Sampler:</br>
 	Random sampling supports discrete and continuous hyperparameters. It supports early termination of low-performance runs. It is computationally less expensive as it takes subset of combinations and it's faster unlike GridParameterSampling. Some users do an initial search with random sampling and then refine the search space to improve results. In random sampling, hyperparameter values are randomly selected from the defined search space.
-	GridParameterSampling utilize more resources compare to RandomParameterSampling.
-
-
-RandomParameter Sampling is computationally less expensive as it just takes a subset of combinations. On the other hand GridParameterSampling takes all the possible combinations of the hyperparameters and hence is computationally very expensive. For the future iteration, you may also try out BayesianParameter Sampling Technique which intelligently picks the next sample of hyperparameters, based on how the previous samples performed, such that the new sample improves the reported primary metric. It was the right choice to use BanditPolicy as it cancels the runs which are not up to the mark !!
-
-Random sweep: When you select this option, the module will randomly select parameter values over a system-defined range. You must specify the maximum number of runs that you want the module to execute. This option is useful when you want to increase model performance by using the metrics of your choice but still conserve computing resources.
+	You can also specify the maximum number of runs that you want the module to execute. This option is useful when you want to increase model performance by using the metrics of your choice but still conserve computing resources. GridParameterSampling utilize more resources compare to RandomParameterSampling. 
 
 ps = RandomParameterSampling( 
     {
