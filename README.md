@@ -22,13 +22,19 @@ In contrast, for the AutoML model with ID AutoML_ee4a685e-34f2-4031-a4f9-fe96ff3
 Pipeline architecture:<br/>
 		Dataset - Created the dataset using TabularDatasetFactory. Split data into train and test (0.2) sets.<br/>
 		Train data - Created the training script to train the marketing data dataset using Scikit-learn Logistic regression algorithm.<br/>
-		HyperDrive - Used HyperDrive with specified parameter sampler and policy for early stopping to find the optimal hyperparameter for logistic regression model. 					This will give us trained model with optimize hyperparameter.<br/>
+		HyperDrive - Used HyperDrive with specified parameter sampler and policy for early stopping to find the optimal hyperparameter for logistic regression model. This will give us trained model with optimize hyperparameter.<br/>
 	
 
 **What are the benefits of the parameter sampler you chose?**
 
 I chose Random Paramer Sampler:
-	Random sampling supports discrete and continuous hyperparameters. It supports early termination of low-performance runs. Some users do an initial search with random sampling and then refine the search space to improve results. In random sampling, hyperparameter values are randomly selected from the defined search space.
+	Random sampling supports discrete and continuous hyperparameters. It supports early termination of low-performance runs. It is computationally less expensive as it takes subset of combinations and it's faster unlike GridParameterSampling. Some users do an initial search with random sampling and then refine the search space to improve results. In random sampling, hyperparameter values are randomly selected from the defined search space.
+	GridParameterSampling utilize more resources compare to RandomParameterSampling.
+
+
+RandomParameter Sampling is computationally less expensive as it just takes a subset of combinations. On the other hand GridParameterSampling takes all the possible combinations of the hyperparameters and hence is computationally very expensive. For the future iteration, you may also try out BayesianParameter Sampling Technique which intelligently picks the next sample of hyperparameters, based on how the previous samples performed, such that the new sample improves the reported primary metric. It was the right choice to use BanditPolicy as it cancels the runs which are not up to the mark !!
+
+Random sweep: When you select this option, the module will randomly select parameter values over a system-defined range. You must specify the maximum number of runs that you want the module to execute. This option is useful when you want to increase model performance by using the metrics of your choice but still conserve computing resources.
 
 ps = RandomParameterSampling( 
     {
@@ -38,8 +44,7 @@ ps = RandomParameterSampling(
 )
 
 Here i chose discrete values with _choice_ for both parameters, _C_ and _max_iter_. _C_ is the Regularization and _max_iter_ is the maximum number of iterations. 
-_RandomParameterSampling_ is faster and supports early termination of low-performance runs. It has cost benefits. 
-If budget is not an issue, we could use _GridParameterSampling_ to exhaustively search over the search space. GridParameterSampling utilize more resources compare toe RandomParameterSampling.
+This option trains a model by using a set number of iterations. You specify a range of values to iterate over, and the module uses a randomly chosen subset of those values. Values are chosen with replacement, meaning that numbers previously chosen at random are not removed from the pool of available numbers. So the chance of any value being selected stays the same across all passes.
 
 
 **What are the benefits of the early stopping policy you chose?**
@@ -106,6 +111,9 @@ Algorithm - VotingEnsemble
 
 ## Future work
 **What are some areas of improvement for future experiments? Why might these improvements help the model?**
+
+Entire grid: 
+
 
 ## Proof of cluster clean up
 **If you did not delete your compute cluster in the code, please complete this section. Otherwise, delete this section.**
