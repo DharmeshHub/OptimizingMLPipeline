@@ -10,8 +10,9 @@ In this project, we build and optimize an Azure ML pipeline using the Python SDK
 The data used here is of direct marketing campaigns through phone calls for banking institution. The classification goal is to predict if customer will subscribe to term deposit (yes/no). Dataset consits of 32950 records with 20 independent variables out of which 10 are numeric features and 10 are categorical features. Additionally targetvariable is "y".
 
 **In 1-2 sentences, explain the solution: e.g. "The best performing model was a ..."**
-The best performing model was the HyperDrive model with ID <HD_fda34223-a94c-456b-8bf7-52e84aa1d17e_14. It derived from a Scikit-learn pipeline and had an accuracy of 0.91760. 
-In contrast, for the AutoML model with ID AutoML_ee4a685e-34f2-4031-a4f9-fe96ff33836c_13, the accuracy was 0.91618 and the algorithm used was VotingEnsemble.
+
+The best permforming model was the AutoML model with ID - AutoML_f6431fa8-cd51-40d7-817e-97ca693a2e1d_4, the accuracy was 0.91558 and algorithm used was VotingEnsemble.
+In Compared to the Scikit-learn HyperDriver model with ID - HD_6606dab1-d34f-429d-8535-6b44ff6a8ab9_29 and accuracy was 0.90789
 
 
 ## Scikit-learn Pipeline
