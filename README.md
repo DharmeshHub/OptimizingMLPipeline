@@ -62,12 +62,13 @@ _delay_evaluation: (optional) delays the first policy evaluation for a specified
 Auto ML:
 	Dataset - Created Tabular dataset.
 	Auto ML - Used Auto ML to find best training model.
-	
+	Description: Best Model generated was of VotingEnsemble algorithm. It is an ensemble created from previous AutoML iterations that implements soft voting. AutoML uses predicts based on the weighted average of predicted class probabilities. As our data is imbalan, Voting ensemble to avoid bias towards particular class.
+
 Below is the AutoML configuration i set for this project.
 
 automl_config = AutoMLConfig(
     compute_target=compute_target,
-    experiment_timeout_minutes=20,
+    experiment_timeout_minutes=30,
     task='classification',
     primary_metric="accuracy",
     training_data=train_data,
@@ -75,7 +76,7 @@ automl_config = AutoMLConfig(
     n_cross_validations=5
 )
 
-_experiment_timeout_minutes=20_
+_experiment_timeout_minutes=30_
 
 This is an exit criterion and is used to define how long (in minutes), the experiment should continue to run. To help avoid experiment time out failures, I used the minimum of 20 minutes.
 
@@ -95,22 +96,30 @@ This parameter sets how many cross validations to perform, based on the same num
 ## Pipeline comparison
 **Compare the two models and their performance. What are the differences in accuracy? In architecture? If there was a difference, why do you think there was one?**
 
+Model - HyperDrive:
 run_id - HD_6606dab1-d34f-429d-8535-6b44ff6a8ab9_29
 Accuracy - 0.9078907435508345
 Parameter sampling - Random
 Termination Policy - BANDIT
 
-
+Model - AutoML:
 run_id = AutoML_f6431fa8-cd51-40d7-817e-97ca693a2e1d_4
 Accuracy - 0.915585873177552
 Algorithm - VotingEnsemble
 
+The difference is the accuracy as above between two models. AutoML runs data agains multiple alogorithm so we get best model with higher accuracy compare to Hyperdrive model where we are working with one model. In every AutoML experiment, automatic scaling and normalization techniques are applied to your data by default. These techniques are types of featurization that help certain algorithms that are sensitive to features on different scales. You can enable more featurization, such as missing-values imputation, encoding, and transforms, in case of HyperDrive model we have to tune model with multiple runs.
+
+
 ## Future work
 **What are some areas of improvement for future experiments? Why might these improvements help the model?**
 
-Entire grid: 
+- For HyperDrive model, a range of different optimization algorithms can be used, like grid search as we did random search. Define a new model and set the hyperparameter values of the model to the values found by different search. Then fit the model on all available data and use the model to start making predictions on new data.
+- Accuracy metrics is not suitable metric for Imbalanced data, rather AUC_weighted metric is best for imbalance data.
+- We can explore more on using customize featurization settings to ensure that the data and features that are used to train your ML model result in relevant predictions.
 
 
 ## Proof of cluster clean up
-**If you did not delete your compute cluster in the code, please complete this section. Otherwise, delete this section.**
 **Image of cluster marked for deletion**
+
+![Pipeline diagram](/Images/DeleteCompute.png)
+![Pipeline diagram](/Images/DeleteCompute1.png)
