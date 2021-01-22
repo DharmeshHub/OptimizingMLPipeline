@@ -96,16 +96,16 @@ This parameter sets how many cross validations to perform, based on the same num
 ## Pipeline comparison
 **Compare the two models and their performance. What are the differences in accuracy? In architecture? If there was a difference, why do you think there was one?**
 
-Model - HyperDrive:
-run_id - HD_6606dab1-d34f-429d-8535-6b44ff6a8ab9_29
-Accuracy - 0.9078907435508345
-Parameter sampling - Random
-Termination Policy - BANDIT
+<b>HyperDrive Model:</b></br>
+run_id - HD_6606dab1-d34f-429d-8535-6b44ff6a8ab9_29</br>
+Accuracy - 0.9078907435508345</br>
+Parameter sampling - Random</br>
+Termination Policy - BANDIT</br>
 
-Model - AutoML:
-run_id = AutoML_f6431fa8-cd51-40d7-817e-97ca693a2e1d_4
-Accuracy - 0.915585873177552
-Algorithm - VotingEnsemble
+<b>AutoML Model:</b></br>
+run_id = AutoML_f6431fa8-cd51-40d7-817e-97ca693a2e1d_4</br>
+Accuracy - 0.915585873177552</br>
+Algorithm - VotingEnsemble</br>
 
 The difference is the accuracy as above between two models. AutoML runs data agains multiple alogorithm so we get best model with higher accuracy compare to Hyperdrive model where we are working with one model. In every AutoML experiment, automatic scaling and normalization techniques are applied to your data by default. These techniques are types of featurization that help certain algorithms that are sensitive to features on different scales. You can enable more featurization, such as missing-values imputation, encoding, and transforms, in case of HyperDrive model we have to tune model with multiple runs.
 
@@ -123,3 +123,4 @@ The difference is the accuracy as above between two models. AutoML runs data aga
 
 ![Pipeline diagram](/Images/DeleteCompute.png)
 ![Pipeline diagram](/Images/DeleteCompute1.png)
+
