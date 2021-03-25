@@ -1,84 +1,85 @@
-# Optimizing an ML Pipeline in Azure
-
-## Overview
-This project is part of the Udacity Azure ML Nanodegree.
-In this project, we build and optimize an Azure ML pipeline using the Python SDK and a provided Scikit-learn model. I used HyperDrive to optimise the hyperparameter of the model. Additionally used Azure AutoML to find the optimal model using same dataset and compare the resultes of the both the methods.
-
-## Summary
-**In 1-2 sentences, explain the problem statement: e.g "This dataset contains data about... we seek to predict..."**
-
-The data used here is of direct marketing campaigns through phone calls for banking institution. The classification goal is to predict if customer will subscribe to term deposit (yes/no). Dataset consits of 32950 records with 20 independent variables out of which 10 are numeric features and 10 are categorical features. Additionally targetvariable is "y".
-
-**In 1-2 sentences, explain the solution: e.g. "The best performing model was a ..."**
-
-The best permforming model was the AutoML model with ID - AutoML_f6431fa8-cd51-40d7-817e-97ca693a2e1d_4, the accuracy was 0.91558 and algorithm used was VotingEnsemble.
-In Compared to the Scikit-learn HyperDriver model with ID - HD_6606dab1-d34f-429d-8535-6b44ff6a8ab9_29 and accuracy was 0.90789
+# Udacity Capstone Project - Using Machine Learning to Predict Survival of Patients with Heart Failure
 
 
-## Scikit-learn Pipeline
-**Explain the pipeline architecture, including data, hyperparameter tuning, and classification algorithm.**
+In this project, we have created two models: one using Automated ML (AutoML) and one customized model whose hyperparameters are tuned using HyperDrive. We then compare the performance of both the models and deploy the best performing model. We have used Patient Heart failure data to predict survival, source of data is from publicly available <a href="https://www.kaggle.com">Kaggle</a> dataset. We consume the deployed model using rest endpoint URL. 
 
-![Pipeline diagram](/Images/Pipeline.jfif)
+Below is overall task flow of this project:
 
-Pipeline architecture:<br/>
-		Dataset - Created the dataset using TabularDatasetFactory. Split data into train and test (0.2) sets.<br/>
-		Train data - Created the training script to train the marketing data dataset using Scikit-learn Logistic regression algorithm.<br/>
-		HyperDrive - Used HyperDrive with specified parameter sampler and policy for early stopping to find the optimal hyperparameter for logistic regression model. This will give us trained model with optimize hyperparameter.<br/>
-	
+![Project Workflow](images/Capstone_Project.jpg?raw=true "Project Workflow") 
 
-**What are the benefits of the parameter sampler you chose?**
+## Project Set Up and Installation
+This is project used Azure Machine Learning studio provided by Udacity Lab. We have used following Jupyter notebook files to completes this project.
 
-I chose Random Paramer Sampler:</br>
-	Random sampling supports discrete and continuous hyperparameters. It supports early termination of low-performance runs. It is computationally less expensive as it takes subset of combinations and it's faster unlike GridParameterSampling. Some users do an initial search with random sampling and then refine the search space to improve results. In random sampling, hyperparameter values are randomly selected from the defined search space.
-	You can also specify the maximum number of runs that you want the module to execute. This option is useful when you want to increase model performance by using the metrics of your choice but still conserve computing resources. GridParameterSampling utilize more resources compare to RandomParameterSampling. 
+In order to run the project in Azure Machine Learning Studio, we will need the two Jupyter Notebooks files, dataset file and other supporting files to build models.
 
-ps = RandomParameterSampling( 
-    {
-        "--max_iter": choice(10,50,100,150,200)
-        ,"--C": choice(0.5,0.8,0.9,1,1.25,1.5)
-    }
-)
+- `automl.ipynb`: AutoML model;
+- `hyperparameter_tuning.ipynb`: HyperDrive model.
+- `heart_failure_clinical_records_dataset.csv`: the dataset file.
 
-Here i chose discrete values with _choice_ for both parameters, _C_ and _max_iter_. _C_ is the Regularization and _max_iter_ is the maximum number of iterations. 
-This option trains a model by using a set number of iterations. You specify a range of values to iterate over, and the module uses a randomly chosen subset of those values. Values are chosen with replacement, meaning that numbers previously chosen at random are not removed from the pool of available numbers. So the chance of any value being selected stays the same across all passes.
+- Additionally, Models are created under Python 3.6 SDK environment and xgboost with verion 1.3.3 was installed. I removed version 1.3.3 and installed version xgboost==0.90 version. This we need to get best run detail detail.
+
+## Dataset
+
+### Overview
+*TODO*: Explain about the data you are using and where you got it from.
+
+Cardiovascular diseases (CVDs) are the number one of the most cause of death globally, taking an estimated 17.9 million lives each year.
+Heart failure is a common event caused by CVDs and this dataset contains 12 features that can be used to predict mortality by heart failure.
+Most cardiovascular diseases can be prevented by addressing behavioural risk factors such as tobacco use, unhealthy diet and obesity, physical inactivity and harmful use of alcohol using population-wide strategies.
+People with cardiovascular disease or who are at high cardiovascular risk (due to the presence of one or more risk factors such as hypertension, diabetes, hyperlipidaemia or already established disease) need early detection and management wherein a machine learning model can be of great help.
+
+This dataset has been taken from kaggle site - https://www.kaggle.com/andrewmvd/heart-failure-clinical-data?select=heart_failure_clinical_records_dataset.csv
+
+Below are (13) clinical features in this dataset:
+
+- age: age of the patient (years)
+- anaemia: decrease of red blood cells or hemoglobin (boolean)
+- high blood pressure: if the patient has hypertension (boolean)
+- creatinine phosphokinase (CPK): level of the CPK enzyme in the blood (mcg/L)
+- diabetes: if the patient has diabetes (boolean)
+- ejection fraction: percentage of blood leaving the heart at each contraction (percentage)
+- platelets: platelets in the blood (kiloplatelets/mL)
+- sex: woman or man (binary)
+- serum creatinine: level of serum creatinine in the blood (mg/dL)
+- serum sodium: level of serum sodium in the blood (mEq/L)
+- smoking: if the patient smokes or not (boolean)
+- time: follow-up period (days)
+- [target] death event: if the patient deceased during the follow-up period (boolean)
+
+![Dataset details](images/Dataset_detail.png?raw=true "Dataset detail") 
 
 
-**What are the benefits of the early stopping policy you chose?**
-
-Early stopping policy automatically terminates poorly performing runs. For more aggressive savings, used Bandit Policy with a smaller allowable slack or Truncation Selection Policy with a larger truncation percentage. Any run that doesn't fall within the slack factor or slack amount of the evaluation metric with respect to the best performing run will be terminated. This means that with this policy, the best performing runs will execute until they finish.
-
-policy = BanditPolicy(evaluation_interval=1, slack_factor=0.1, delay_evaluation=5)
-
-_evaluation_interval_: (optional) the frequency for applying the policy. Each time the training script logs the primary metric counts as one interval.
-
-_slack_factor_: The amount of slack allowed with respect to the best performing training run. This factor specifies the slack as a ratio.
-
-_delay_evaluation: (optional) delays the first policy evaluation for a specified number of intervals.
+### Task
+The model we build using Heart failure dataset classify whether patient have chance of survival or not. Model use above list features and result in target column (Death event) with value 0 (no) or 1 (yes).
 
 
-## AutoML
-**In 1-2 sentences, describe the model and hyperparameters generated by AutoML.**
+### Access
 
-<b>Auto ML:</b></br>
-	Dataset - Created Tabular dataset.</br>
-	Auto ML - Used Auto ML to find best training model.</br>
-	Description: Best Model generated was of VotingEnsemble algorithm. It is an ensemble created from previous AutoML iterations that implements soft voting. AutoML uses predicts based on the weighted average of predicted class probabilities. As our data is imbalan, Voting ensemble to avoid bias towards particular class.</br>
+I downloaded dataset file (.csv) from Kaggle site and added to my GitHub respository. I access dataset directly from my GitHub repository and registered the dataset into workspace. I have also added dataset file in my Jupyter notebook directory to access data during training (train.py)
 
-Below is the AutoML configuration i set for this project.
+***Create Dataset:*** _URI source_
+[Create Dataset Registered](images/CreateDataset.png?raw=true "Create Dataset") 
 
-automl_config = AutoMLConfig(
-    compute_target=compute_target,
-    experiment_timeout_minutes=30,
-    task='classification',
-    primary_metric="accuracy",
-    training_data=train_data,
-    label_column_name="y",
-    n_cross_validations=5
-)
+***Registered datasets:*** _heart-failure-prediction_
+![Dataset Registered](images/RegisteredDataset.png?raw=true "Dataset Registered") 
 
-_experiment_timeout_minutes=30_
+***Registered datasets Source:*** _URI_
+![Dataset URI](images/RegisteredDatasetURI.png?raw=true "Dataset URI") 
+
+ 
+## Automated ML
+*TODO*: Give an overview of the `automl` settings and configuration you used for this experiment
+
+Below is the AutoML setting and configuration for this project.
+![AutoML Configuration](images/AutoMLConfiguration.png?raw=true "AutoML Configuration") 
+
+_experiment_timeout_minutes=20_
 
 This is an exit criterion and is used to define how long (in minutes), the experiment should continue to run. To help avoid experiment time out failures, I used the minimum of 20 minutes.
+
+_max_concurrent_iterations_: 4
+
+It represents the maximum number of iterations that would be executed in parallel.
 
 _task='classification'_
 
@@ -88,86 +89,80 @@ _primary_metric='accuracy'_
 
 I chose accuracy as the primary metric for this classification model.
 
-_n_cross_validations=5_
+_n_cross_validations=2_
 
-This parameter sets how many cross validations to perform, based on the same number of folds (subsets). Five folds for cross-validation are defined. So, five different trainings, each training using 4/5 of the data, and each validation using 1/5 of the data with a different holdout fold each time.
+This parameter sets how many cross validations to perform, based on the same number of folds (subsets). Two folds for cross-validation are defined. So, two different trainings, each training using 1/2 of the data, and each validation using 1/2 of the data with a different holdout fold each time.
 
+_enable_early_stopping=True_
 
-<B>Parameters generated by AutoML</B>
+Early stopping helps in performance, it terminates poor performing run and fully run good performing run.
 
-AutoML used Voting Classifier Ensemble methods, there are two types of voting method a) Soft and b) Hard voting. Hard voting is basically majority carries the vote. Here in our AutoML uses Soft voting, it predicts the class label based on argmax of the sums of the predicted probabilities of individual models that make up the ensemble. i.e weighted average the probabilities.
-AutoML set below parameters to avoid over-fitting.
+_featurization=auto_
 
-('prefittedsoftvotingclassifier',...\n",
-            "                                                                                                    min_samples_leaf=0.01,\n",
-            "                                                                                                    min_samples_split=0.2442105263157895,\n",
-            "                                                                                                    min_weight_fraction_leaf=0.0,\n",
-            "                                                                                                    n_estimators=10,\n",
-            "                                                                                                    n_jobs=1,\n",
-            "                                                                                                    oob_score=False,\n",
-            "                                                                                                    random_state=None,\n",
-            "                                                                                                    verbose=0,\n",
-            "                                                                                                    warm_start=False))],\n",
-            "                                                                     verbose=False))],\n",
-			
+Featurization is done automatically, i.e. normalization technique are applied to your data. This help certain algorithms that are sensitive to features on different scales.
 
+_lable_column_name = "DEATH_EVENT"
+The name of the label (target) column. This parameter is applicable to training_data and validation_data parameters.
 
-min_samples_split - An internal node will have further splits, this specifies the minimum number of sample required to split an internal node. We can specifiy a number to denote the minimum number or a fraction to denote the percentage of samples in an internal node.
+### Results
+*TODO*: What are the results you got with your automated ML model? What were the parameters of the model? How could you have improved it?
 
-min_samples_leaf - A leaf node is a node without any further splits. This specifies the minimum number of samples required to be a leaf nodes.
+Below is the best model run for AutoML model.
+run_id = AutoML_c6507e5f-cd46-4860-a977-7732236037f7_16
+Accuracy - 0.852841163310962
+Algorithm - VotingEnsemble
 
 
-min_weight_fraction_leaf - Default=0.0
-This is quite similar to min_samples_leaf, but it uses a fraction of the sum total number of observations instead.
+Following are screenshot of AutoML experiment run.
 
-n_estimators - Default=10
-The number of trees your want to build within a Random Forest before aggregating the predictions. The higher the number the better, but it is important to know this is more computationally expensive and will take longer for your code to run.
- 
-n_jobs-(integer)-Default=1
-This lets the computer know how many processors it is allowed to use. The default value of 1 means it can only use one processor. If you use -1 it means that there is no restriction of how much processing power the code can use. Setting your n_jobs to -1 will often lead to faster processing.
+***AutoML Completed:***
+[AutoML Completed](images/AutoML_Exp_Completed.png?raw=true "AutoML Completed") 
 
-oob_score-(boolean)-Default=False
-This is a cross-validation method that is very similar to a leave-one out validation technique where the generalized estimated performance of a model is trained on n-1 samples of the data. However, oob_score is much faster because it grabs all observations used in the trees and finds out the maximum score for each samples base on the trees which did not use that samples to train.
+***Data Guardrials:***
+[Data Guardrials](images/DataGuardrials.png?raw=true "Data Guardrials") 
 
-random_state-(integer, RandomState instance, None)-Default=None
-Since the bootstrapping generates random samples it is often hard to exactly duplicate results. This parameter makes it easy for others to replicate your results if given the same training data and parameters.
+***AutoML Best Model:***
+[AutoML Best Model](images/AutoML_Exp_BestModel1.png?raw=true "AutoML Best Model") 
 
-verbose-(integer)-Default=0
-Verbose means that you are setting the logging output which gives you constant updates about what the model is doing as it processed. This parameter sets the verbosity of the tree’s building process. It is not always useful and may take up an unnecessary space in your notebook.
+***AutoML RunDetails Widget:***
+[AutoML RunDetails](images/AutoML_Exp_Completed_SDK.png?raw=true "AutoML RunDetails") 
 
-warm_start-(boolean)-Default=False
-At False it fits a new forest each time as opposed to when it is True it adds estimators and reuses the solution of the previous fit. It is mostly used when you are using recursive feature selection. This means that when you drop some features other features will gain in importance and to “appreciate” the trees they must be reused. It is often used with backward elimination in regression models and not often used in classification models
+***AutoML runs:***
+[AutoML Runs](images/Auto_RunDetails.png.png?raw=true "AutoML Runs") 
 
 
+***Best model top features:***
+[Best Model features](images/BestModel_Topfeatures.png.png?raw=true "Best Model features")
 
-## Pipeline comparison
-**Compare the two models and their performance. What are the differences in accuracy? In architecture? If there was a difference, why do you think there was one?**
+*TODO* Remeber to provide screenshots of the `RunDetails` widget as well as a screenshot of the best model trained with it's parameters.
 
-<b>HyperDrive Model:</b></br>
-run_id - HD_6606dab1-d34f-429d-8535-6b44ff6a8ab9_29</br>
-Accuracy - 0.9078907435508345</br>
-Parameter sampling - Random</br>
-Termination Policy - BANDIT</br>
+***Best model run details:*** _Details of Best run:_
 
-<b>AutoML Model:</b></br>
-run_id = AutoML_f6431fa8-cd51-40d7-817e-97ca693a2e1d_4</br>
-Accuracy - 0.915585873177552</br>
-Algorithm - VotingEnsemble</br>
+[Best Runs](images/BestRunDetails.png.png?raw=true "Best Run") 
 
-The difference is the accuracy as above between two models. AutoML runs data agains multiple alogorithm so we get best model with higher accuracy compare to Hyperdrive model where we are working with one model. In every AutoML experiment, automatic scaling and normalization techniques are applied to your data by default. These techniques are types of featurization that help certain algorithms that are sensitive to features on different scales. You can enable more featurization, such as missing-values imputation, encoding, and transforms, in case of HyperDrive model we have to tune model with multiple runs.
+[Best Runs2](images/BestRunDetails1.png.png?raw=true "Best Run1") 
+
+[Best Runs3](images/BestRunDetails2.png.png?raw=true "Best Run2")
 
 
-## Future work
-**What are some areas of improvement for future experiments? Why might these improvements help the model?**
 
-- For HyperDrive model, a range of different optimization algorithms can be used, like grid search as we did random search. Define a new model and set the hyperparameter values of the model to the values found by different search. Then fit the model on all available data and use the model to start making predictions on new data.
-- Accuracy metrics is not suitable metric for Imbalanced data, rather AUC_weighted metric is best for imbalance data.
-- We can explore more on using customize featurization settings to ensure that the data and features that are used to train your ML model result in relevant predictions.
+## Hyperparameter Tuning
+*TODO*: What kind of model did you choose for this experiment and why? Give an overview of the types of parameters and their ranges used for the hyperparameter search
 
 
-## Proof of cluster clean up
-**Image of cluster marked for deletion**
+### Results
+*TODO*: What are the results you got with your model? What were the parameters of the model? How could you have improved it?
 
-![Pipeline diagram](/Images/DeleteCompute.png)
-![Pipeline diagram](/Images/DeleteCompute1.png)
+*TODO* Remeber to provide screenshots of the `RunDetails` widget as well as a screenshot of the best model trained with it's parameters.
 
+## Model Deployment
+*TODO*: Give an overview of the deployed model and instructions on how to query the endpoint with a sample input.
+
+## Screen Recording
+*TODO* Provide a link to a screen recording of the project in action. Remember that the screencast should demonstrate:
+- A working model
+- Demo of the deployed  model
+- Demo of a sample request sent to the endpoint and its response
+
+## Standout Suggestions
+*TODO (Optional):* This is where you can provide information about any standout suggestions that you have attempted.
